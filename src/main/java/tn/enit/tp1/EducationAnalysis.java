@@ -8,8 +8,10 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-public class AverageHoursByMaritalStatus {
+
+public class EducationAnalysis {
     public static void main(String[] args) throws Exception {
+
         if (args.length != 2) {
             System.err.println("Usage: AverageHoursByMaritalStatus <input path> <output path>");
             System.exit(-1);
@@ -23,15 +25,16 @@ public class AverageHoursByMaritalStatus {
             fs.delete(outputPath, true);
         }
 
-        Job job = Job.getInstance(conf, "AverageHoursByMaritalStatus");
-        job.setJarByClass(AverageHoursByMaritalStatus.class);
-        job.setMapperClass(TokenizerMapper.class);
-        job.setCombinerClass(IntSumReducer.class);
-        job.setReducerClass(IntSumReducer.class);
+        Job job = Job.getInstance(conf, "Education Analysis");
+        job.setJarByClass(EducationAnalysis.class);
+        job.setMapperClass(EducationMapper.class);
+        job.setReducerClass(EducationReducer.class);
+
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntPairWritable.class);  // Set output value class to IntPairWritable
+        job.setOutputValueClass(IntPairWritable.class);
+
         FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, outputPath);
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
